@@ -14,12 +14,19 @@ const FileProcessorComponent: React.FC<props> = ({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const excludedFolders = [
-    "node_modules",
     ".git",
     ".vscode",
-    "dist",
-    "build",
     "coverage",
+    "bin",
+    "out",
+    "__pycache__",
+    "node_modules",
+    ".idea",
+    "venv",
+    "env",
+    ".vs",
+    "build",
+    "dist",
   ];
   const excludedFiles = [
     ".gitignore",
@@ -27,6 +34,9 @@ const FileProcessorComponent: React.FC<props> = ({
     "tsconfig.json",
     "README.md",
     "output.pdf",
+    "*.iml",
+    "*.pyc",
+    "yarn.lock",
     "*.png",
     "*.jpg",
     "*.jpeg",
