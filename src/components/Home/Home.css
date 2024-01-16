@@ -55,6 +55,30 @@ main {
   flex: 1 0 auto;
 }
 
+#drop_zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e96a155d;
+  color: #000;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 1000;
+}
+
+.selected-files {
+  color: green;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 footer {
   flex-shrink: 0;
   background-color: #333;

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import "./Home.css";
 import FileProcessorComponent from "../FileProcessor";
+import { InputFile } from "../InputFile";
 
 const Home: React.FC = () => {
   const [generatedPDF, setGeneratedPDF] = useState<Uint8Array | null>(null);
   const [showAlert, setShowAlert] = useState<string>("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const downloadPDF = () => {
     if (!generatedPDF)
@@ -39,8 +41,26 @@ const Home: React.FC = () => {
           <div className="file-types">
             <div className="file-type">
               <h2>Project.zip</h2>
-              <p>Insira seu projeto .zip aqui e clique em processar</p>
-              <FileProcessorComponent setGeneratedPDF={setGeneratedPDF} setShowAlert={setShowAlert}/>
+              <p>
+                Insira ou arraste seu projeto .zip aqui e clique em processar
+              </p>
+              <InputFile setSelectedFiles={setSelectedFiles} />
+              {selectedFiles.length > 0 && (
+                <>
+                  <p>Arquivos selecionados: </p>
+                  <p className="selected-files">
+                    {selectedFiles.map((file) => {
+                      const conc = selectedFiles.length > 1 ? ", " : " ";
+                      return file.name + conc;
+                    })}
+                  </p>
+                </>
+              )}
+              <FileProcessorComponent
+                setGeneratedPDF={setGeneratedPDF}
+                setShowAlert={setShowAlert}
+                selectedFiles={selectedFiles}
+              />
             </div>
             <div className="file-type">
               <h2>Project.pdf</h2>

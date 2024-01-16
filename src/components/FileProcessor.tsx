@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { PDFDocument, PDFFont, StandardFonts } from "pdf-lib";
 import JSZip from "jszip";
 
 type props = {
   setGeneratedPDF: React.Dispatch<React.SetStateAction<Uint8Array | null>>;
   setShowAlert: React.Dispatch<React.SetStateAction<string>>;
+  selectedFiles: File[];
 };
 
 const FileProcessorComponent: React.FC<props> = ({
   setGeneratedPDF,
   setShowAlert,
-}: props) => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
+  selectedFiles,
+}) => {
   const excludedFolders = [
     ".git",
     ".vscode",
@@ -44,12 +44,6 @@ const FileProcessorComponent: React.FC<props> = ({
     "*.bmp",
     "*.ico",
   ];
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setSelectedFiles(Array.from(event.target.files));
-    }
-  };
 
   const processZipFile = async (
     file: File,
@@ -182,14 +176,7 @@ const FileProcessorComponent: React.FC<props> = ({
     setGeneratedPDF(pdfBytes);
   };
 
-  return (
-    <div>
-      <p>
-        <input type="file" multiple onChange={handleFileChange} />
-      </p>
-      <button onClick={processFiles}>Converter Código</button>
-    </div>
-  );
+  return <button onClick={processFiles}>Converter Código</button>;
 };
 
 export default FileProcessorComponent;
