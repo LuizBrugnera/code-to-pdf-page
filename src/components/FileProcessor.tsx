@@ -31,25 +31,25 @@ const FileProcessorComponent: React.FC<props> = ({
   const excludedFiles = [
     ".gitignore",
     "package-lock.json",
-    "tsconfig.json",
     "README.md",
     "output.pdf",
-    "*.iml",
-    "*.pyc",
     "yarn.lock",
-    "*.png",
-    "*.jpg",
-    "*.jpeg",
-    "*.gif",
-    "*.bmp",
-    "*.ico",
+    "README.md",
+    ".iml",
+    ".pyc",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".ico",
   ];
 
   const processZipFile = async (
     file: File,
     doc: PDFDocument,
     font: PDFFont,
-    summaryData: { fileCount: number; archiveTypes: Set<string> }
+    summaryData: { fileCount: number; archiveTypes: Set<string>, lineCount: number}
   ) => {
     const zip = new JSZip();
     const zipContents = await zip.loadAsync(file);
@@ -67,6 +67,7 @@ const FileProcessorComponent: React.FC<props> = ({
 
       const fileData = await zipContents.files[fileName].async("string");
       const lines = fileData.split("\n");
+      summaryData.lineCount += lines.length;
       let currentPage = doc.addPage();
       let currentY = currentPage.getHeight() - 50;
       const text = `Arquivo: ${fileName}\n\n`;
@@ -81,11 +82,12 @@ const FileProcessorComponent: React.FC<props> = ({
       currentY -= 14 * 3;
 
       for (const line of lines) {
+        const cleanedLine = line.replace(/[^\x20-\x7E\n\t]/g, "");
         if (currentY < 50) {
           currentPage = doc.addPage();
           currentY = currentPage.getHeight() - 50;
         }
-        currentPage.drawText(line, {
+        currentPage.drawText(cleanedLine, {
           x: 50,
           y: currentY,
           size: 10,
@@ -108,6 +110,7 @@ const FileProcessorComponent: React.FC<props> = ({
 
     const summaryData = {
       fileCount: 0,
+      lineCount: 0,
       archiveTypes: new Set<string>(),
     };
 
@@ -123,6 +126,7 @@ const FileProcessorComponent: React.FC<props> = ({
         fileContent = fileContent.replace(/[^\x20-\x7E\n\t]/g, "");
 
         const lines = fileContent.split("\n");
+        summaryData.lineCount += lines.length;
         let currentPage = doc.addPage();
         const text = `Arquivo: ${file.name}\n\n`;
         currentPage.drawText(text, {
@@ -137,11 +141,12 @@ const FileProcessorComponent: React.FC<props> = ({
         let currentY = currentPage.getHeight() - 50 - 14 * 3;
 
         for (const line of lines) {
+          const cleanedLine = line.replace(/[^\x20-\x7E\n\t]/g, "");
           if (currentY < 50) {
             currentPage = doc.addPage();
             currentY = currentPage.getHeight() - 50;
           }
-          currentPage.drawText(line, {
+          currentPage.drawText(cleanedLine, {
             x: 50,
             y: currentY,
             size: 10,
@@ -151,7 +156,6 @@ const FileProcessorComponent: React.FC<props> = ({
           });
           currentY -= 14;
         }
-
         summaryData.fileCount++;
         summaryData.archiveTypes.add(file.name.split(".").pop() || "");
       }
@@ -162,7 +166,8 @@ const FileProcessorComponent: React.FC<props> = ({
       summaryData.fileCount
     }\n\nArchive Types Found: ${Array.from(summaryData.archiveTypes).join(
       ", "
-    )}\n\nSelected Files: ${selectedFiles.map((file) => file.name).join(", ")}`;
+    )}\n\nTotal Code Lines: ${summaryData.lineCount}\n\n
+    Selected Files: ${selectedFiles.map((file) => file.name).join(", ")}`;
     summaryPage.drawText(summaryText, {
       x: 50,
       y: summaryPage.getHeight() - 50,
